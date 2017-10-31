@@ -1,0 +1,22 @@
+<appian-plugin name="Box" key="boxFileUtilities">
+	<plugin-info>
+		<description>Box</description>
+		<vendor name="Appian Corporation" url="http://www.appian.com" />
+		<version>1.0.2</version>
+		<application-version min="7.1.0" />
+	</plugin-info>
+	<smart-service name="Create JWT" key="createJWT-local"
+		class="com.appiancorp.ps.plugins.boxFileUtilities.CreateJWT" />
+	<function-category key="jwtCategory" name="JWT Functions" />
+    <function key="jwt" class="com.appiancorp.ps.plugins.boxFileUtilities.CreateJWT" />
+	<smart-service name="Box File Upload" key="BoxFileUpload"
+		class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileUpload" />
+	<smart-service name="Box File Download" key="BoxFileDownloadToAppianV2"
+		class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownload" />
+	<function-category key="boxCategory" name="Box Functions" />
+    <function key="box" class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownloadToAppian" />
+    <servlet name="Box Download Servlet" key="boxServlet" class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownloadServlet">
+        <description>Download Box File</description>
+        <url-pattern>/boxfiledownload</url-pattern>
+    </servlet>
+</appian-plugin>
