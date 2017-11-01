@@ -7,6 +7,7 @@ public class JWTHeader {
     private String alg = "RS256";
     private String typ = "JWT";
     private String kid = "lcgrayjq";
+//    private String kid = "76prtll3";
     private Map<String, Object> map = new HashMap<String, Object>();
     
     public JWTHeader() {

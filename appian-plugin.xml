@@ -5,8 +5,6 @@
 		<version>1.0.2</version>
 		<application-version min="7.1.0" />
 	</plugin-info>
-	<smart-service name="Create JWT" key="createJWT-local"
-		class="com.appiancorp.ps.plugins.boxFileUtilities.CreateJWT" />
 	<function-category key="jwtCategory" name="JWT Functions" />
     <function key="jwt" class="com.appiancorp.ps.plugins.boxFileUtilities.CreateJWT" />
 	<smart-service name="Box File Upload" key="BoxFileUpload"

@@ -12,24 +12,19 @@ import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.appiancorp.suiteapi.common.Name;
-import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
-import com.appiancorp.suiteapi.process.framework.AppianSmartService;
-import com.appiancorp.suiteapi.process.framework.Order;
-import com.appiancorp.suiteapi.process.palette.ConnectivityServices;
+import com.appiancorp.suiteapi.content.ContentConstants;
+import com.appiancorp.suiteapi.content.ContentService;
 import com.appiancorp.suiteapi.expression.annotations.Category;
 import com.appiancorp.suiteapi.expression.annotations.Function;
 import com.appiancorp.suiteapi.expression.annotations.Parameter;
 
-@ConnectivityServices
-@Order({
-	"alg", "typ", "kid", "iss", "sub", "box_sub_type", "aud", "jti", "token", "exceptionMessage"
-})
-
 @Category("jwtCategory")
-public class CreateJWT extends AppianSmartService {
+public class CreateJWT {
 	private static final Logger LOG = Logger.getLogger(CreateJWT.class);
-	
+
 	/* Inputs */
+	private long privateKeyId;
+	private long publicKeyId;
 	private JWTHeader head = new JWTHeader();
 	private JWTClaim claim = new JWTClaim();
 
@@ -37,20 +32,57 @@ public class CreateJWT extends AppianSmartService {
 	private String token;
 	private String exceptionMessage;
 
-	public CreateJWT() {
-	}
-
-	@Override
-	public void run() throws SmartServiceException {
-		createToken();
-	}
-
-	public String createToken() {
+	@Function
+	public String createToken(
+		ContentService cs,
+		@Parameter @Name("privateKey") Long privKey,
+		@Parameter @Name("publicKey") Long pubKey,
+		@Parameter @Name("sub") String sub,
+		@Parameter @Name("customClaims") String claims,
+		@Parameter(required = false) @Name("alg") String alg,
+		@Parameter(required = false) @Name("typ") String typ,
+		@Parameter(required = false) @Name("kid") String kid,
+		@Parameter(required = false) @Name("iss") String iss,
+		@Parameter(required = false) @Name("aud") String aud,
+		@Parameter(required = false) @Name("jti") String jti
+	) {
+		if (privKey > 0) {
+			privateKeyId = privKey;
+		}
+		if (pubKey > 0) {
+			publicKeyId = pubKey;
+		}
+		if (alg != null && alg.length() > 0) {
+			head.setAlg(alg);
+		}
+		if (typ != null && typ.length() > 0) {
+			head.setTyp(typ);
+		}
+		if (kid != null && kid.length() > 0) {
+			head.setKid(kid);
+		}
+		if (iss != null && iss.length() > 0) {
+			claim.setIss(iss);
+		}
+		if (sub != null && sub.length() > 0) {
+			claim.setSub(sub);
+		}
+		if (claims != null && claims.length() > 0) {
+			claim.setCustomClaim("box_sub_type", claims);
+		}
+		if (aud != null && aud.length() > 0) {
+			claim.setAud(aud);
+		}
+		if (jti != null && jti.length() > 0) {
+			claim.setJti(jti);
+		}
 		RSAPublicKey publicKey = null;
 		RSAPrivateKey privateKey = null;
 		try {
-			publicKey = (RSAPublicKey) PemUtils.readPublicKeyFromFile("/tmp/box-pub-key.pem", "RSA");
-			privateKey = (RSAPrivateKey) PemUtils.readPrivateKeyFromFile("/tmp/box-open-key.pem", "RSA");
+			String privKeyName = cs.getInternalFilename(cs.getVersionId(privateKeyId, ContentConstants.VERSION_CURRENT));
+			String pubKeyName = cs.getInternalFilename(cs.getVersionId(publicKeyId, ContentConstants.VERSION_CURRENT));
+			privateKey = (RSAPrivateKey) PemUtils.readPrivateKeyFromFile(privKeyName, "RSA");
+			publicKey = (RSAPublicKey) PemUtils.readPublicKeyFromFile(pubKeyName, "RSA");
 		} catch (Exception e) {
 			exceptionMessage = exceptionMessage + System.getProperty("line.separator") + e.toString();
 			LOG.error("Error reading certificates", e);
@@ -78,97 +110,5 @@ public class CreateJWT extends AppianSmartService {
 			return "Error creating JWT";
 		}
 		return token;
-	}
-
-	@Function
-	public String createToken(
-		@Parameter @Name("sub") String sub,
-		@Parameter @Name("box_sub_type") String claims,
-		@Parameter(required = false) @Name("alg") String alg,
-		@Parameter(required = false) @Name("typ") String typ,
-		@Parameter(required = false) @Name("kid") String kid,
-		@Parameter(required = false) @Name("iss") String iss,
-		@Parameter(required = false) @Name("aud") String aud,
-		@Parameter(required = false) @Name("jti") String jti
-	) {
-		if (alg != null && alg.length() > 0) {
-			head.setAlg(alg);
-		}
-		if (typ != null && typ.length() > 0) {
-			head.setTyp(typ);
-		}
-		if (kid != null && kid.length() > 0) {
-			head.setKid(kid);
-		}
-		if (iss != null && iss.length() > 0) {
-			claim.setIss(iss);
-		}
-		if (sub != null && sub.length() > 0) {
-			claim.setSub(sub);
-		}
-		if (claims != null && claims.length() > 0) {
-			claim.setCustomClaim("box_sub_type", claims);
-		}
-		if (aud != null && aud.length() > 0) {
-			claim.setAud(aud);
-		}
-		if (jti != null && jti.length() > 0) {
-			claim.setJti(jti);
-		}
-		return createToken();
-	}
-	@Name("alg")
-	public void setAlg(String s) {
-		head.setAlg(s);
-	}
-
-	@Name("typ")
-	public void setTyp(String s) {
-		head.setTyp(s);
-	}
-
-	@Name("kid")
-	public void setKid(String s) {
-		head.setKid(s);
-	}
-
-	@Name("iss")
-	public void setIss(String s) {
-		claim.setIss(s);
-	}
-
-	@Name("sub")
-	public void setSub(String s) {
-		claim.setSub(s);
-	}
-
-	@Name("customClaims")
-	public void setCustomClaims(String claim) {
-		this.claim.setCustomClaim("box_sub_type", claim);
-	}
-
-	@Name("aud")
-	public void setAud(String s) {
-		claim.setAud(s);
-	}
-
-	@Name("jti")
-	public void setJti(String s) {
-		claim.setJti(s);
-	}
-
-	@Name("expiration")
-	public void setExperation(int val) {
-		claim.setExp(val);
-	}
-
-	@Name("token")
-	public String getToken() {
-		return token;
-	}
-
-	@Name("exceptionMessage")
-	public String getExceptionMessage() {
-		return exceptionMessage;
 	}
 }
