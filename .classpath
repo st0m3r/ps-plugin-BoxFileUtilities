@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="lib/java-jwt-0.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/bcprov-jdk15on-1.55.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-databind-2.9.0.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-2.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.9.0.jar"/>
 	<classpathentry kind="src" output="bin" path="src/test/java">
@@ -31,17 +30,18 @@
 	<classpathentry kind="lib" path="lib/bcpkix-jdk15on-1.51.jar"/>
 	<classpathentry kind="lib" path="lib/box-java-sdk-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jose4j-0.4.4.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib/minimal-json-0.9.1.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/javax.inject-1.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/javax.servlet-api-3.1.0.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/json-rpc-1.0.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/commons-collections-3.1.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/commons-fileupload-1.3.1.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="/Users/scott/Workspace/ps-plugin-BoxFileUtilities/lib-compile/commons-lang-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="lib-compile/commons-collections4-4.1.jar"/>
+	<classpathentry kind="lib" path="lib-compile/commons-fileupload-1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib-compile/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib-compile/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="lib-compile/commons-lang-2.1.jar"/>
+	<classpathentry kind="lib" path="lib-compile/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="lib-compile/javax.servlet-api-3.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/minimal-json-0.9.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

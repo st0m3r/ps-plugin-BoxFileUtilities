@@ -43,25 +43,48 @@ public class BoxFileDownloadToAppian {
 			@Parameter @Name("token") String token) throws Exception {
 		String result = "Failed to Download File";
 		try {
+			//Setup Box Connection and retrieve file info
 			BoxAPIConnection api = new BoxAPIConnection(token);
 			BoxFile file = new BoxFile(api, document);
 			BoxFile.Info info = file.getInfo();
-			File tmpFile = new File(info.getName());
+			String boxFileName = info.getName();
+			String extension = info.getExtension();
+			if (extension == null && boxFileName.lastIndexOf(".") > 0) {
+				//Pull the extension from the file name
+				int last = boxFileName.lastIndexOf(".");
+				extension = boxFileName.substring(last+1);
+				boxFileName = boxFileName.substring(0, last);
+			}
+
+			//Download the file
+			File tmpFile = File.createTempFile(boxFileName, extension);
 			FileOutputStream stream = new FileOutputStream(tmpFile);
 			file.download(stream);
+
+			//Create the Appian Document
 			Document doc = new Document();
-			doc.setName(info.getName());
+			doc.setName(boxFileName);
 			doc.setDescription(info.getDescription());
-			doc.setExtension(info.getExtension());
+			doc.setExtension(extension);
 			doc.setParent(folderId);
 			doc.setSize((int)info.getSize());
+			doc.setType(ContentConstants.TYPE_DOCUMENT);
 			long outputDocumentId = cs.create(doc, ContentConstants.UNIQUE_NONE);
 			File outputFile = new File(cs.getInternalFilename(outputDocumentId));
-			FileUtils.moveFile(tmpFile, outputFile);
+
+			//Copy downloaded file to Appian Document
+			FileUtils.copyFile(tmpFile, outputFile);
+			try {
+				tmpFile.delete();
+			} catch (Exception ex) {
+				//ignore
+			}
+
+			//Provide feedback
 			result = "Uploaded File ID: " + outputDocumentId;
 			LOG.info(result);
 			stream.close();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
 			LOG.error(exceptionMessage);
 		}
