@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.appiancorp.suiteapi.common.Name;
 import com.appiancorp.suiteapi.content.ContentService;
+import com.appiancorp.suiteapi.knowledge.DocumentDataType;
 import com.appiancorp.suiteapi.knowledge.FolderDataType;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.appiancorp.suiteapi.process.framework.AppianSmartService;
@@ -13,7 +14,7 @@ import com.appiancorp.suiteapi.expression.annotations.Category;
 
 @ConnectivityServices
 @Order({
-	"document", "folder", "token", "exceptionMessage"
+	"boxId", "folder", "token", "document", "exceptionMessage"
 })
 
 @Category("boxCategory")
@@ -22,11 +23,12 @@ public class BoxFileDownload extends AppianSmartService {
 	private final ContentService cs ;
 
 	/* Inputs */
-	private String document;
+	private String boxId;
 	private Long folderId;
 	private String token;
 
 	/* Outputs */
+	private Long document;
 	private String exceptionMessage;
 
 	public BoxFileDownload(ContentService cs) {
@@ -37,16 +39,26 @@ public class BoxFileDownload extends AppianSmartService {
 	public void run() throws SmartServiceException {
 		BoxFileDownloadToAppian down = new BoxFileDownloadToAppian();
 		try {
-			down.downloadDocumentToAppian(cs, document, folderId, token);
+			String result = down.downloadDocumentToAppian(cs, boxId, folderId, token);
+			//Check the result for a document ID
+			int loc = result.lastIndexOf(":");
+			if (loc > 0) {
+				String str = result.substring(loc+1);
+				try {
+					document = Long.valueOf(str);
+				} catch (Exception ex) {
+					//ignore
+				}
+			}
 		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
 			LOG.error(exceptionMessage);
 		}
 	}
 
-	@Name("document")
-	public void setDocument(String document) {
-		this.document = document;
+	@Name("boxId")
+	public void setBoxId(String id) {
+		this.boxId = id;
 	}
 
 	@Name("folder")
@@ -59,7 +71,13 @@ public class BoxFileDownload extends AppianSmartService {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
+
+	@Name("document")
+	@DocumentDataType
+	public Long getDocument() {
+		return document;
+	}
+
 	@Name("exceptionMessage")
 	public String getExceptionMessage() {
 		return exceptionMessage;

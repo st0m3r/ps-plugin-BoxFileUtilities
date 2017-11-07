@@ -22,7 +22,7 @@ import com.box.sdk.BoxFile;
 
 @ConnectivityServices
 @Order({
-	"document", "folder", "token", "exceptionMessage"
+	"boxID", "folder", "token", "document", "exceptionMessage"
 })
 
 @Category("boxCategory")
@@ -30,6 +30,7 @@ public class BoxFileDownloadToAppian {
 	private static final Logger LOG = Logger.getLogger(BoxFileDownloadToAppian.class);
 
 	/* Outputs */
+	private Long outputDocumentId;
 	private String exceptionMessage;
 
 	public BoxFileDownloadToAppian() {
@@ -38,7 +39,7 @@ public class BoxFileDownloadToAppian {
 	@Function
 	public String downloadDocumentToAppian(
 			ContentService cs,
-			@DocumentDataType @Parameter @Name("document") String document,
+			@DocumentDataType @Parameter @Name("boxID") String document,
 			@FolderDataType @Parameter @Name("folder") Long folderId,
 			@Parameter @Name("token") String token) throws Exception {
 		String result = "Failed to Download File";
@@ -69,7 +70,7 @@ public class BoxFileDownloadToAppian {
 			doc.setParent(folderId);
 			doc.setSize((int)info.getSize());
 			doc.setType(ContentConstants.TYPE_DOCUMENT);
-			long outputDocumentId = cs.create(doc, ContentConstants.UNIQUE_NONE);
+			outputDocumentId = cs.create(doc, ContentConstants.UNIQUE_NONE);
 			File outputFile = new File(cs.getInternalFilename(outputDocumentId));
 
 			//Copy downloaded file to Appian Document
@@ -81,7 +82,7 @@ public class BoxFileDownloadToAppian {
 			}
 
 			//Provide feedback
-			result = "Uploaded File ID: " + outputDocumentId;
+			result = "Downloaded File ID:" + outputDocumentId;
 			LOG.info(result);
 			stream.close();
 		} catch (Exception e) {
@@ -89,6 +90,12 @@ public class BoxFileDownloadToAppian {
 			LOG.error(exceptionMessage);
 		}
 		return result;
+	}
+
+	@Name("document")
+	@DocumentDataType
+	public Long getDocument() {
+		return outputDocumentId;
 	}
 
 	@Name("exceptionMessage")
