@@ -1,5 +1,5 @@
 # ps-plugin-BoxFileUtilities
-##Utilities to integrate Appian with Box##
+## Utilities to integrate Appian with Box ##
 
 Comprised of 4 parts:
 1. Create JWT Token
@@ -9,7 +9,7 @@ Comprised of 4 parts:
   1. Custom Function
 1. File Download Servlet
 
-###Create JWT Token###
+### Create JWT Token ###
 Provides a custom function called `createtoken` that will provide the user with a JWT that can be used for up to 60 seconds as authentication with the `/token` API from Box.  The function can take 8 parameters; however, only two are required.
 Parameters (See Header and Claims above for descriptions):
 1. sub
@@ -25,23 +25,23 @@ Parameters (See Header and Claims above for descriptions):
 
 *'Examples:*'
 WIthin an Interface or Expression Rule:
-`rule!Box(
-    jwt: fn!createtoken(
-        sub: cons!BOX_SERVICE_USER,
-        customClaims: "user"
-    ),
-    onSuccess: {
-        a!save(
-            ri!accessCode,
-            a!fromJson(fv!result.body).access_token
-        )
-    },
-    onError: {
-        a!save(
-            ri!accessCode,
-            fv!result
-        )
-    }
+`rule!Box(`
+    `jwt: fn!createtoken(`
+        `sub: cons!BOX_SERVICE_USER,`
+        `customClaims: "user"`
+    `),`
+    `onSuccess: {`
+        `a!save(`
+            `ri!accessCode,`
+            `a!fromJson(fv!result.body).access_token`
+        `)`
+    `},`
+    `onError: {`
+        `a!save(`
+            `ri!accessCode,`
+            `fv!result`
+        `)`
+    `}`
 )`
 
 In this example, rule!Box is an Integration to the https://api.box.com/oauth2/token Box API which receives the JWT created by the plugin and returns an access token valid for 60 seconds for use with Box APIs.  The BOX_SERVICE_USER constant is set to 2338120597.  The managed user I created using the APIs has an ID of 2644852656 and I created a constant for that as well (BOX_APP_USER).
