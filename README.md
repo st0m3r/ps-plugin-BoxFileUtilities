@@ -25,39 +25,22 @@ Parameters (See Header and Claims above for descriptions):
 
 #### Example: Within an Interface or Expression Rule ####
 `rule!Box(`
-
     `jwt: fn!createtoken(`
-
         `sub: cons!BOX_SERVICE_USER,`
-
         `customClaims: "user"`
-
     `),`
-
     `onSuccess: {`
-
         `a!save(`
-
             `ri!accessCode,`
-
             `a!fromJson(fv!result.body).access_token`
-
         `)`
-
     `},`
-
     `onError: {`
-
         `a!save(`
-
             `ri!accessCode,`
-
             `fv!result`
-
         `)`
-
     `}`
-
 )`
 
 
@@ -72,27 +55,16 @@ The service takes two inputs: Appian Document and Token.
   This part of the plugin exposes both a custom function as well as a smart service to download a file from Box and store it in a provided Appian Folder.
 #### Example custom function: ####
 `if(`
-
   `not(isnull(local!accessCode)),`
-
   `a!save(`
-
     `local!fileInfo,`
-
     `fn!downloadDocumentToAppian(`
-
       `document: local!fileId,`
-
       `folder: local!folderId,`
-
       `token: local!accessCode`
-
     `)`
-
   `),`
-
   `{}`
-
 `)`
 
 In the above example, a File ID and Folder ID are stored in local variables via Interface component saves.
@@ -107,21 +79,12 @@ token - the access code obtained with a JWT
 
 #### Example Usage: ####
 `a!safeLink(`
-
   `label: ri!axDocId,`
-
   `uri: concat(`
-
     `rule!APN_getSiteUrl(),`
-
     `"plugins/servlet/boxfiledownload?document=",`
-
     `ri!documentID,`
-
     `"&token=",`
-
     `ri!accessCode`
-
   `)`
-
 `)`
