@@ -2,26 +2,26 @@
 ## Utilities to integrate Appian with Box ##
 
 Comprised of 4 parts:
-1. Create JWT Token
-1. File Upload Smart Service
-1. File Download to Appian KC/Folder
-  1. Smart Service
-  1. Custom Function
-1. File Download Servlet
+* Create JWT Token
+* File Upload Smart Service
+* File Download to Appian KC/Folder
+  * Smart Service
+  * Custom Function
+* File Download Servlet
 
 ### Create JWT Token ###
 Provides a custom function called `createtoken` that will provide the user with a JWT that can be used for up to 60 seconds as authentication with the `/token` API from Box.  The function can take 8 parameters; however, only two are required.
 Parameters (See Header and Claims above for descriptions):
-1. sub
-  1. Required
-1. box_sub_type
-  1. Required
-1. alg
-1. typ
-1. kid
-1. iss
-1. aud
-1. jti
+* sub
+  * Required
+* box_sub_type
+  * Required
+* alg
+* typ
+* kid
+* iss
+* aud
+* jti
 
 #### Example: Within an Interface or Expression Rule ####
 ```
