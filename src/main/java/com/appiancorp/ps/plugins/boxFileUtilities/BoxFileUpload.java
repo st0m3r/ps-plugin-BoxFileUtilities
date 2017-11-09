@@ -23,7 +23,7 @@ import com.box.sdk.BoxFolder;
 
 @ConnectivityServices
 @Order({
-	"document", "token", "boxId", "exceptionMessage"
+	"document", "folder", "token", "boxId", "exceptionMessage"
 })
 
 @Category("boxCategory")
@@ -33,6 +33,7 @@ public class BoxFileUpload extends AppianSmartService {
 
 	/* Inputs */
 	private Long document;
+	private String folder;
 	private String token;
 
 	/* Outputs */
@@ -59,7 +60,8 @@ public class BoxFileUpload extends AppianSmartService {
 		File file = new File(tmp);
 		FileInputStream fis = new FileInputStream(file);
 		BoxAPIConnection api = new BoxAPIConnection(token);
-		BoxFolder rootFolder = BoxFolder.getRootFolder(api);
+    BoxFolder rootFolder = new BoxFolder(api, folder);
+//		BoxFolder rootFolder = BoxFolder.getRootFolder(api);
 		try {
 			String name = doc.getDisplayName();
 			if (name == null) {
@@ -67,7 +69,8 @@ public class BoxFileUpload extends AppianSmartService {
 				name = doc.getName()+"."+doc.getExtension();
 			}
 			BoxFile.Info newFileInfo = rootFolder.uploadFile(fis, name);
-			result = newFileInfo.getID();
+			boxId = newFileInfo.getID();
+      result = boxId;
 			fis.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -87,6 +90,11 @@ public class BoxFileUpload extends AppianSmartService {
 	public void setDocument(Long document) {
 		this.document = document;
 	}
+
+  @Name("folder")
+  public void setFolder(String folder) {
+    this.folder = folder;
+  }
 
 	@Name("token")
 	public void setToken(String token) {

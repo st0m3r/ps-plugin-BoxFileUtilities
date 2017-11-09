@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="lib-compile/javax.inject-1.jar"/>
 	<classpathentry kind="lib" path="lib-compile/javax.servlet-api-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/minimal-json-0.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/tika-core-1.16.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
