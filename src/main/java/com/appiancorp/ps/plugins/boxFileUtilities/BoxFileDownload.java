@@ -8,13 +8,17 @@ import com.appiancorp.suiteapi.knowledge.DocumentDataType;
 import com.appiancorp.suiteapi.knowledge.FolderDataType;
 import com.appiancorp.suiteapi.process.exceptions.SmartServiceException;
 import com.appiancorp.suiteapi.process.framework.AppianSmartService;
+import com.appiancorp.suiteapi.process.framework.Input;
 import com.appiancorp.suiteapi.process.framework.Order;
+import com.appiancorp.suiteapi.process.framework.Required;
 import com.appiancorp.suiteapi.process.palette.ConnectivityServices;
 import com.appiancorp.suiteapi.expression.annotations.Category;
 
 @ConnectivityServices
 @Order({
-	"boxId", "folder", "token", "document", "exceptionMessage"
+	"boxIds", "createNewDocument", "existingDocument", "addToZip",
+	"newDocumentName", "newDocumentDescription", "saveInFolder", "token",
+	"document", "exceptionMessage"
 })
 
 @Category("boxCategory")
@@ -23,8 +27,13 @@ public class BoxFileDownload extends AppianSmartService {
 	private final ContentService cs ;
 
 	/* Inputs */
-	private String boxId;
-	private Long folderId;
+	private String[] boxIds;
+	private Boolean addToZip;
+  private Boolean createNewDocument;
+  private Long existingDocument;
+  private String newDocumentName;
+  private String newDocumentDescription;
+	private Long saveInFolder;
 	private String token;
 
 	/* Outputs */
@@ -39,32 +48,64 @@ public class BoxFileDownload extends AppianSmartService {
 	public void run() throws SmartServiceException {
 		BoxFileDownloadToAppian down = new BoxFileDownloadToAppian();
 		try {
-			String result = down.downloadDocumentToAppian(cs, boxId, folderId, token);
-			//Check the result for a document ID
-			int loc = result.lastIndexOf(":");
-			if (loc > 0) {
-				String str = result.substring(loc+1);
-				try {
-					document = Long.valueOf(str);
-				} catch (Exception ex) {
-					//ignore
-				}
-			}
+      String result = down.downloadDocumentToAppian(
+        cs, boxIds, createNewDocument, existingDocument, addToZip,
+        newDocumentName, newDocumentDescription, saveInFolder,
+        token, document, exceptionMessage);
+      //Check the result for a document ID
+      int loc = result.lastIndexOf(":");
+      if (loc > 0) {
+        String str = result.substring(loc+1);
+        try {
+          document = Long.valueOf(str);
+        } catch (Exception ex) {
+          //ignore
+        }
+      }
 		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
 			LOG.error(exceptionMessage);
 		}
 	}
 
-	@Name("boxId")
-	public void setBoxId(String id) {
-		this.boxId = id;
+	@Name("boxIds")
+	public void setBoxIds(String[] ids) {
+		this.boxIds = ids;
 	}
 
-	@Name("folder")
+	@Name("addToZip")
+	public void setAddToZip(Boolean b) {
+	  this.addToZip = b;
+	}
+
+	@Name("createNewDocument")
+	public void setCreateNewDocument(Boolean b) {
+	  this.createNewDocument = b;
+	}
+
+  @Input(required = Required.OPTIONAL)
+  @Name("existingDocument")
+	@DocumentDataType
+	public void setExistingDocument(Long l) {
+	  this.existingDocument = l;
+	}
+
+  @Input(required = Required.OPTIONAL)
+	@Name("newDocumentName")
+	public void setNewDocumentName(String s) {
+	  this.newDocumentName = s;
+	}
+
+  @Input(required = Required.OPTIONAL)
+	@Name("newDocumentDescription")
+	public void setNewDocumentDescription(String s) {
+	  this.newDocumentDescription = s;
+	}
+
+	@Name("saveInFolder")
 	@FolderDataType
-	public void setFolderId(Long id) {
-		this.folderId = id;
+	public void setSaveInFolder(Long id) {
+		this.saveInFolder = id;
 	}
 
 	@Name("token")

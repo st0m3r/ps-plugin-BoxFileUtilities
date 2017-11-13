@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -69,6 +71,9 @@ public class BoxFileDownloadServlet extends AppianServlet {
 				String mimeType = new Tika().detect(tmpFile);
 				resp.setContentLength((int) tmpFile.length());
 				resp.setContentType(mimeType);
+				String fileName = URLEncoder.encode(info.getName(), "UTF-8");
+				fileName = URLDecoder.decode(fileName, "ISO8859_1");
+				resp.setHeader("Content-disposition", "attachment; filename="+ fileName);
 
 				//Get the OutputStream of the response object
 				respStream = resp.getOutputStream();

@@ -9,7 +9,7 @@
     <function key="jwt" class="com.appiancorp.ps.plugins.boxFileUtilities.CreateJWT" />
 	<smart-service name="Box File Upload" key="BoxFileUploadV6"
 		class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileUpload" />
-	<smart-service name="Box File Download" key="BoxFileDownloadToAppianV5"
+	<smart-service name="Box File Download" key="BoxFileDownloadToAppianV8"
 		class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownload" />
 	<function-category key="boxCategory" name="Box Functions" />
     <function key="box" class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownloadToAppian" />
