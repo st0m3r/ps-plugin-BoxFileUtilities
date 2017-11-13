@@ -15,24 +15,21 @@ import com.appiancorp.suiteapi.process.palette.ConnectivityServices;
 import com.appiancorp.suiteapi.expression.annotations.Category;
 
 @ConnectivityServices
-@Order({
-	"boxIds", "createNewDocument", "existingDocument", "addToZip",
-	"newDocumentName", "newDocumentDescription", "saveInFolder", "token",
-	"document", "exceptionMessage"
-})
+@Order({ "boxIds", "createNewDocument", "existingDocument", "addToZip", "newDocumentName", "newDocumentDescription",
+		"saveInFolder", "token", "document", "exceptionMessage" })
 
 @Category("boxCategory")
 public class BoxFileDownload extends AppianSmartService {
 	private static final Logger LOG = Logger.getLogger(BoxFileDownload.class);
-	private final ContentService cs ;
+	private final ContentService cs;
 
 	/* Inputs */
 	private String[] boxIds;
 	private Boolean addToZip;
-  private Boolean createNewDocument;
-  private Long existingDocument;
-  private String newDocumentName;
-  private String newDocumentDescription;
+	private Boolean createNewDocument;
+	private Long existingDocument;
+	private String newDocumentName;
+	private String newDocumentDescription;
 	private Long saveInFolder;
 	private String token;
 
@@ -48,20 +45,23 @@ public class BoxFileDownload extends AppianSmartService {
 	public void run() throws SmartServiceException {
 		BoxFileDownloadToAppian down = new BoxFileDownloadToAppian();
 		try {
-      String result = down.downloadDocumentToAppian(
-        cs, boxIds, createNewDocument, existingDocument, addToZip,
-        newDocumentName, newDocumentDescription, saveInFolder,
-        token, document, exceptionMessage);
-      //Check the result for a document ID
-      int loc = result.lastIndexOf(":");
-      if (loc > 0) {
-        String str = result.substring(loc+1);
-        try {
-          document = Long.valueOf(str);
-        } catch (Exception ex) {
-          //ignore
-        }
-      }
+			String result = down.downloadDocumentToAppian(cs, boxIds, createNewDocument, existingDocument, addToZip,
+					newDocumentName, newDocumentDescription, saveInFolder, token, document, exceptionMessage);
+			String exc = down.getExceptionMessage();
+			if (exc != null) {
+				exceptionMessage = exc;
+			}
+
+			// Check the result for a document ID
+			int loc = result.lastIndexOf(":");
+			if (loc > 0) {
+				String str = result.substring(loc + 1);
+				try {
+					document = Long.valueOf(str);
+				} catch (Exception ex) {
+					// ignore
+				}
+			}
 		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
 			LOG.error(exceptionMessage);
@@ -75,31 +75,31 @@ public class BoxFileDownload extends AppianSmartService {
 
 	@Name("addToZip")
 	public void setAddToZip(Boolean b) {
-	  this.addToZip = b;
+		this.addToZip = b;
 	}
 
 	@Name("createNewDocument")
 	public void setCreateNewDocument(Boolean b) {
-	  this.createNewDocument = b;
+		this.createNewDocument = b;
 	}
 
-  @Input(required = Required.OPTIONAL)
-  @Name("existingDocument")
+	@Input(required = Required.OPTIONAL)
+	@Name("existingDocument")
 	@DocumentDataType
 	public void setExistingDocument(Long l) {
-	  this.existingDocument = l;
+		this.existingDocument = l;
 	}
 
-  @Input(required = Required.OPTIONAL)
+	@Input(required = Required.OPTIONAL)
 	@Name("newDocumentName")
 	public void setNewDocumentName(String s) {
-	  this.newDocumentName = s;
+		this.newDocumentName = s;
 	}
 
-  @Input(required = Required.OPTIONAL)
+	@Input(required = Required.OPTIONAL)
 	@Name("newDocumentDescription")
 	public void setNewDocumentDescription(String s) {
-	  this.newDocumentDescription = s;
+		this.newDocumentDescription = s;
 	}
 
 	@Name("saveInFolder")
