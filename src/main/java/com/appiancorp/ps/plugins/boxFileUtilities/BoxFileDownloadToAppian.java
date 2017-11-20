@@ -51,14 +51,15 @@ public class BoxFileDownloadToAppian {
 	}
 
 	@Function
-	public String downloadDocumentToAppian(ContentService cs, @Parameter @Name("boxIds") String[] boxIds,
-			@Parameter @Name("createNewDocument") Boolean createNewDocument,
-			@DocumentDataType @Parameter @Name("existingDocument") Long existingDocument,
-			@Parameter @Name("addToZip") Boolean addToZip, @Parameter @Name("newDocumentName") String newDocumentName,
-			@Parameter @Name("newDocumentDescription") String newDocumentDescription,
-			@FolderDataType @Parameter @Name("saveInFolder") Long saveInFolder, @Parameter @Name("token") String token,
-			@DocumentDataType @Parameter @Name("document") Long document,
-			@Parameter @Name("exceptionMessage") String exceptionMessage) throws Exception {
+	public String downloadDocumentToAppian(ContentService cs,
+			@Parameter(required = true) @Name("boxIds") String[] boxIds,
+			@Parameter(required = true) @Name("createNewDocument") Boolean createNewDocument,
+			@Parameter(required = true) @Name("addToZip") Boolean addToZip,
+			@FolderDataType @Parameter(required = true) @Name("saveInFolder") Long saveInFolder,
+			@Parameter(required = true) @Name("token") String token,
+			@DocumentDataType @Parameter(required = false) @Name("existingDocument") Long existingDocument,
+			@Parameter(required = false) @Name("newDocumentName") String newDocumentName,
+			@Parameter(required = false) @Name("newDocumentDescription") String newDocumentDescription) throws Exception {
 		String result = "Failed to Download File(s)";
 		try {
 			// Check for multiple Files
@@ -66,7 +67,6 @@ public class BoxFileDownloadToAppian {
 				// If more than 1 file, make sure zip is selected
 				if (boxIds.length > 1 && !addToZip) {
 					exceptionMessage = "Please set Add To Zip to true when providing multiple documents";
-					this.exceptionMessage = exceptionMessage;
 					LOG.error(exceptionMessage);
 					throw new Exception(exceptionMessage);
 				}
@@ -135,6 +135,7 @@ public class BoxFileDownloadToAppian {
 				if (outputDocumentId != null) {
 					if (!addToZip) {
 						// Copy downloaded file to Appian Document
+						cs.setSizeOfDocumentVersion(outputDocumentId);
 						File outputFile = new File(cs.getInternalFilename(outputDocumentId));
 						FileUtils.copyFile(tmpFile, outputFile);
 						try {
@@ -150,12 +151,10 @@ public class BoxFileDownloadToAppian {
 				}
 			} else {
 				exceptionMessage = "Please provide a Box File ID to download";
-				this.exceptionMessage = exceptionMessage;
 				throw new Exception(exceptionMessage);
 			}
 		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
-			this.exceptionMessage = exceptionMessage;
 			LOG.error(exceptionMessage);
 		}
 		return result;

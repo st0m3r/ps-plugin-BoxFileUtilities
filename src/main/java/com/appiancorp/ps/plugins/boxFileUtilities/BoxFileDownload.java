@@ -45,8 +45,9 @@ public class BoxFileDownload extends AppianSmartService {
 	public void run() throws SmartServiceException {
 		BoxFileDownloadToAppian down = new BoxFileDownloadToAppian();
 		try {
-			String result = down.downloadDocumentToAppian(cs, boxIds, createNewDocument, existingDocument, addToZip,
-					newDocumentName, newDocumentDescription, saveInFolder, token, document, exceptionMessage);
+			String result = down.downloadDocumentToAppian(
+					cs, boxIds, createNewDocument, addToZip, saveInFolder, token,
+					existingDocument, newDocumentName, newDocumentDescription);
 			String exc = down.getExceptionMessage();
 			if (exc != null) {
 				exceptionMessage = exc;
