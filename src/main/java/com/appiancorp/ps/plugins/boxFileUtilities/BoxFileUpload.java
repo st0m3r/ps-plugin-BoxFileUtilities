@@ -28,6 +28,7 @@ import com.box.sdk.BoxFolder;
 public class BoxFileUpload extends AppianSmartService {
 	private static final Logger LOG = Logger.getLogger(BoxFileUpload.class);
 	private final ContentService cs;
+	private static final double LARGE_FILE_SIZE = 51200000;
 
 	/* Inputs */
 	private Long[] documents;
@@ -68,7 +69,14 @@ public class BoxFileUpload extends AppianSmartService {
 					// Build the name
 					name = doc.getName() + "." + doc.getExtension();
 				}
-				BoxFile.Info newFileInfo = rootFolder.uploadFile(fis, name);
+
+				BoxFile.Info newFileInfo = null;
+				//Files larger than 50MB must be uploaded in chunks
+				if (file.length() >= LARGE_FILE_SIZE) {
+					newFileInfo = rootFolder.uploadFile(fis, name);
+				} else {
+					newFileInfo = rootFolder.uploadLargeFile(fis, name, file.length());
+				}
 				if (cnt > 0) {
 					result += ", " + newFileInfo.getID();
 				} else {
