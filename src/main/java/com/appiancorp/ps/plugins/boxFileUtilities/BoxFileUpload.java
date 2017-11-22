@@ -22,9 +22,7 @@ import com.box.sdk.BoxFile;
 import com.box.sdk.BoxFolder;
 
 @ConnectivityServices
-@Order({
-	"document", "folder", "token", "boxId", "exceptionMessage"
-})
+@Order({ "documents", "folder", "token", "boxIds", "exceptionMessage" })
 
 @Category("boxCategory")
 public class BoxFileUpload extends AppianSmartService {
@@ -32,12 +30,12 @@ public class BoxFileUpload extends AppianSmartService {
 	private final ContentService cs;
 
 	/* Inputs */
-	private Long document;
+	private Long[] documents;
 	private String folder;
 	private String token;
 
 	/* Outputs */
-	private String boxId;
+	private String[] boxIds;
 	private String exceptionMessage;
 
 	public BoxFileUpload(ContentService cs) {
@@ -55,55 +53,62 @@ public class BoxFileUpload extends AppianSmartService {
 
 	public String uploadDocument(ContentService cs) throws Exception {
 		String result = "Failed to Upload File";
-		Document doc = (Document) cs.getVersion(document,ContentConstants.VERSION_CURRENT);
-		String tmp = cs.getInternalFilename(cs.getVersionId(document, ContentConstants.VERSION_CURRENT));
-		File file = new File(tmp);
-		FileInputStream fis = new FileInputStream(file);
-		BoxAPIConnection api = new BoxAPIConnection(token);
-    BoxFolder rootFolder = new BoxFolder(api, folder);
-//		BoxFolder rootFolder = BoxFolder.getRootFolder(api);
-		try {
-			String name = doc.getDisplayName();
-			if (name == null) {
-				//Build the name
-				name = doc.getName()+"."+doc.getExtension();
+		int cnt = 0;
+		for (Long id : documents) {
+			Document doc = (Document) cs.getVersion(id, ContentConstants.VERSION_CURRENT);
+			String tmp = cs.getInternalFilename(cs.getVersionId(id, ContentConstants.VERSION_CURRENT));
+			File file = new File(tmp);
+			FileInputStream fis = new FileInputStream(file);
+			BoxAPIConnection api = new BoxAPIConnection(token);
+			BoxFolder rootFolder = new BoxFolder(api, folder);
+			// BoxFolder rootFolder = BoxFolder.getRootFolder(api);
+			try {
+				String name = doc.getDisplayName();
+				if (name == null) {
+					// Build the name
+					name = doc.getName() + "." + doc.getExtension();
+				}
+				BoxFile.Info newFileInfo = rootFolder.uploadFile(fis, name);
+				if (cnt > 0) {
+					result += ", " + newFileInfo.getID();
+				} else {
+					result = newFileInfo.getID();
+				}
+				boxIds[cnt++] = newFileInfo.getID();
+				fis.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				LOG.info(e.getMessage());
+			} catch (IOException e) {
+				e.printStackTrace();
+				LOG.info(e.getMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+				LOG.info(e.getMessage());
 			}
-			BoxFile.Info newFileInfo = rootFolder.uploadFile(fis, name);
-			boxId = newFileInfo.getID();
-      result = boxId;
-			fis.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			LOG.info(e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
-			LOG.info(e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			LOG.info(e.getMessage());
 		}
 		return result;
 	}
 
 	@Name("document")
 	@DocumentDataType
-	public void setDocument(Long document) {
-		this.document = document;
+	public void setDocument(Long[] document) {
+		this.documents = document;
 	}
 
-  @Name("folder")
-  public void setFolder(String folder) {
-    this.folder = folder;
-  }
+	@Name("folder")
+	public void setFolder(String folder) {
+		this.folder = folder;
+	}
 
 	@Name("token")
 	public void setToken(String token) {
 		this.token = token;
 	}
 
-	@Name("boxId")
-	public String getBoxId() {
-		return boxId;
+	@Name("boxIds")
+	public String[] getBoxIds() {
+		return boxIds;
 	}
 
 	@Name("exceptionMessage")
