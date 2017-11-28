@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -28,7 +29,7 @@ import com.box.sdk.BoxFolder;
 public class BoxFileUpload extends AppianSmartService {
 	private static final Logger LOG = Logger.getLogger(BoxFileUpload.class);
 	private final ContentService cs;
-	private static final double LARGE_FILE_SIZE = 51200000;
+	private static final long LARGE_FILE_SIZE = 51200000;
 
 	/* Inputs */
 	private Long[] documents;
@@ -36,7 +37,8 @@ public class BoxFileUpload extends AppianSmartService {
 	private String token;
 
 	/* Outputs */
-	private String[] boxIds;
+	private ArrayList<String> boxIds = new ArrayList<String>();
+	private String[] idArray;
 	private String exceptionMessage;
 
 	public BoxFileUpload(ContentService cs) {
@@ -62,7 +64,6 @@ public class BoxFileUpload extends AppianSmartService {
 			FileInputStream fis = new FileInputStream(file);
 			BoxAPIConnection api = new BoxAPIConnection(token);
 			BoxFolder rootFolder = new BoxFolder(api, folder);
-			// BoxFolder rootFolder = BoxFolder.getRootFolder(api);
 			try {
 				String name = doc.getDisplayName();
 				if (name == null) {
@@ -72,17 +73,20 @@ public class BoxFileUpload extends AppianSmartService {
 
 				BoxFile.Info newFileInfo = null;
 				//Files larger than 50MB must be uploaded in chunks
-				if (file.length() >= LARGE_FILE_SIZE) {
+				long sz = file.length();
+				if (sz < LARGE_FILE_SIZE) {
 					newFileInfo = rootFolder.uploadFile(fis, name);
 				} else {
 					newFileInfo = rootFolder.uploadLargeFile(fis, name, file.length());
 				}
-				if (cnt > 0) {
-					result += ", " + newFileInfo.getID();
-				} else {
-					result = newFileInfo.getID();
+				if(newFileInfo != null) {
+					if (cnt > 0) {
+						result += ", " + newFileInfo.getID();
+					} else {
+						result = newFileInfo.getID();
+					}
+					boxIds.add(newFileInfo.getID());
 				}
-				boxIds[cnt++] = newFileInfo.getID();
 				fis.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -95,6 +99,8 @@ public class BoxFileUpload extends AppianSmartService {
 				LOG.info(e.getMessage());
 			}
 		}
+		idArray = new String[boxIds.size()];
+		idArray = boxIds.toArray(idArray);
 		return result;
 	}
 
@@ -116,7 +122,7 @@ public class BoxFileUpload extends AppianSmartService {
 
 	@Name("boxIds")
 	public String[] getBoxIds() {
-		return boxIds;
+		return idArray;
 	}
 
 	@Name("exceptionMessage")
