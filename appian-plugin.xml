@@ -2,7 +2,7 @@
 	<plugin-info>
 		<description>Box</description>
 		<vendor name="Appian Corporation" url="http://www.appian.com" />
-		<version>1.0.2</version>
+		<version>1.0.3</version>
 		<application-version min="7.1.0" />
 	</plugin-info>
 	<function-category name="JWT Functions" key="jwtCategoryV2" />

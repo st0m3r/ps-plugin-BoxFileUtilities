@@ -4,20 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JWTHeader {
-    private String alg = "RS256";
-    private String typ = "JWT";
-    private String kid = "lcgrayjq";
-//    private String kid = "76prtll3";
-    private Map<String, Object> map = new HashMap<String, Object>();
-    
-    public JWTHeader() {
-    }
+	private String alg = "RS256";
+	private String typ = "JWT";
+	private String kid = "lcgrayjq";
+	// private String kid = "76prtll3";
+	private Map<String, Object> map = new HashMap<String, Object>();
 
-    public JWTHeader(String alg, String typ, String kid) {
-    	setAlg(alg);
-    	setTyp(typ);
-    	setKid(kid);
-    }
+	public JWTHeader() {
+	}
+
+	public JWTHeader(String alg, String typ, String kid) {
+		setAlg(alg);
+		setTyp(typ);
+		setKid(kid);
+	}
 
 	public String getAlg() {
 		return alg;
