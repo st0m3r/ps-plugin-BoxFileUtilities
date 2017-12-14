@@ -30,10 +30,17 @@ import org.apache.tika.Tika;
 import org.json.JSONObject;
 
 import com.appiancorp.services.ServiceContext;
+import com.appiancorp.services.WebServiceContextFactory;
 import com.appiancorp.suiteapi.common.Name;
 import com.appiancorp.suiteapi.common.ServiceLocator;
+import com.appiancorp.suiteapi.common.exceptions.InvalidVersionException;
+import com.appiancorp.suiteapi.common.exceptions.PrivilegeException;
+import com.appiancorp.suiteapi.content.Content;
 import com.appiancorp.suiteapi.content.ContentService;
+import com.appiancorp.suiteapi.content.exceptions.InvalidContentException;
 import com.appiancorp.suiteapi.expression.annotations.Parameter;
+import com.appiancorp.suiteapi.personalization.GroupService;
+import com.appiancorp.suiteapi.rules.Constant;
 import com.appiancorp.suiteapi.security.external.SecureCredentialsStore;
 import com.appiancorp.suiteapi.servlet.AppianServlet;
 import com.box.sdk.BoxAPIConnection;
@@ -47,14 +54,10 @@ import com.box.sdk.BoxFile;
 public class BoxFileDownloadServlet extends AppianServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(BoxFileDownloadServlet.class);
+	private static final String ACCESS_GROUP_UUID = "_a-0000dfee-71eb-8000-a320-01ef9001ef90_53474";
 
 	@Inject
 	private SecureCredentialsStore scs;
-
-	// Get the content service
-	@SuppressWarnings("deprecation")
-	private ServiceContext sc = ServiceLocator.getAdministratorServiceContext();
-	private ContentService cs = ServiceLocator.getContentService(sc);
 
 	@Override
 	public void init() throws ServletException {
@@ -63,7 +66,19 @@ public class BoxFileDownloadServlet extends AppianServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		// Get the content service
+		ServiceContext sc = WebServiceContextFactory.getServiceContext(req);
+		ContentService cs = ServiceLocator.getContentService(sc);
+		GroupService gs = ServiceLocator.getGroupService(sc);
+
 		try {
+			// Check that this user is in the access group allowed to download from Box
+			String userName = sc.getName();
+			Long accessGroupId = getAccessGroupId(cs);
+			if(!gs.isUserMember(userName, accessGroupId)) {
+				throw new IllegalStateException("User is not allowed to download from Box");
+			}
+
 			// Retrieve the parameters from the URL
 			// document: the Box ID of the requested document
 			// token: a JWT for authentication
@@ -181,6 +196,22 @@ public class BoxFileDownloadServlet extends AppianServlet {
 		}
 	}
 
+	public Long getAccessGroupId(ContentService cs)
+			throws PrivilegeException, InvalidContentException, InvalidVersionException {
+		Long accessGroupId = null;
+		Long constantId = cs.getIdByUuid(ACCESS_GROUP_UUID);
+		if (constantId == null) {
+			throw new IllegalStateException(
+					"The constant containing the access group for the documents cannot be found on this environment. UUID: "
+							+ constantId);
+		} else {
+			Content content = cs.getVersion(constantId, -1);
+			Constant constant = (Constant) content;
+			accessGroupId = (Long) constant.getTypedValue().getValue();
+		}
+		return accessGroupId;
+	}
+
 	public String getAccessToken(String clientId, String clientSecret, String jwt) throws Exception {
 		String token = null;
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -205,8 +236,8 @@ public class BoxFileDownloadServlet extends AppianServlet {
 				if (respEntity != null) {
 					// EntityUtils to get the response content
 					String content = EntityUtils.toString(respEntity);
-					//Parse the JSON content to get the access_token
-					//{"access_token":"ChcFymZf4uXOICa2rAUOrQvjFzstNuh3","expires_in":4122,"restricted_to":[],"token_type":"bearer"}
+					// Parse the JSON content to get the access_token
+					// {"access_token":"ChcFymZf4uXOICa2rAUOrQvjFzstNuh3","expires_in":4122,"restricted_to":[],"token_type":"bearer"}
 					JSONObject obj = new JSONObject(content);
 					token = obj.getString("access_token");
 				}
