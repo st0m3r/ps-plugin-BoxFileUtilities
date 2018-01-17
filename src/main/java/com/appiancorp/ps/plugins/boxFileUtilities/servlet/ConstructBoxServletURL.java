@@ -21,9 +21,9 @@ public class ConstructBoxServletURL {
 	@Function
 	public String constructBoxURL(ContentService cs, @Parameter(required = true) @Name("boxId") String boxId,
 //			@Parameter(required = true) @Name("groupConstant") String groupConstant,
-			@Parameter(required = true) @Name("ds") String ds, @Parameter(required = true) @Name("table") String table,
-			@Parameter(required = true) @Name("ownerColumn") String ownerColumn,
-			@Parameter(required = true) @Name("documentColumn") String docColumn,
+//			@Parameter(required = true) @Name("ds") String ds, @Parameter(required = true) @Name("table") String table,
+//			@Parameter(required = true) @Name("ownerColumn") String ownerColumn,
+//			@Parameter(required = true) @Name("documentColumn") String docColumn,
 			@Parameter(required = false) @Name("token") String token,
 			@DocumentDataType @Parameter(required = false) @Name("privateKey") Long privKey,
 			@DocumentDataType @Parameter(required = false) @Name("publicKey") Long pubKey,
@@ -43,18 +43,18 @@ public class ConstructBoxServletURL {
 //			if (!StringUtils.isBlank(groupConstant)) {
 //				urlPath += "&groupConstant=" + ueh.encryptParam(groupConstant);
 //			}
-			if (!StringUtils.isBlank(ds)) {
-				urlPath += "&ds=" + ueh.encryptParam(ds);
-			}
-			if (!StringUtils.isBlank(table)) {
-				urlPath += "&table=" + ueh.encryptParam(table);
-			}
-			if (!StringUtils.isBlank(ownerColumn)) {
-				urlPath += "&ownerColumn=" + ueh.encryptParam(ownerColumn);
-			}
-			if (!StringUtils.isBlank(docColumn)) {
-				urlPath += "&documentColumn=" + ueh.encryptParam(docColumn);
-			}
+//			if (!StringUtils.isBlank(ds)) {
+//				urlPath += "&ds=" + ueh.encryptParam(ds);
+//			}
+//			if (!StringUtils.isBlank(table)) {
+//				urlPath += "&table=" + ueh.encryptParam(table);
+//			}
+//			if (!StringUtils.isBlank(ownerColumn)) {
+//				urlPath += "&ownerColumn=" + ueh.encryptParam(ownerColumn);
+//			}
+//			if (!StringUtils.isBlank(docColumn)) {
+//				urlPath += "&documentColumn=" + ueh.encryptParam(docColumn);
+//			}
 			if (!StringUtils.isBlank(token)) {
 				urlPath += "&token=" + ueh.encryptParam(token);
 			}

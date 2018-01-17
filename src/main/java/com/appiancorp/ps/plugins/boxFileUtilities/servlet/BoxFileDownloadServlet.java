@@ -66,7 +66,7 @@ import com.box.sdk.BoxFile;
 public class BoxFileDownloadServlet extends AppianServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(BoxFileDownloadServlet.class);
-	private static final String ACCESS_GROUP_UUID = "_a-0000e002-7d67-8000-06a9-01ef9001ef90_35240";
+//	private static final String ACCESS_GROUP_UUID = "_a-0000e002-7d67-8000-06a9-01ef9001ef90_35240";
 
 	@Inject
 	private SecureCredentialsStore scs;
@@ -99,49 +99,49 @@ public class BoxFileDownloadServlet extends AppianServlet {
 		    String document = ueh.decryptParam(req.getParameter("document"));
 			String token = ueh.decryptParam(req.getParameter("token"));
 //			String groupConstant = ueh.decryptParam(req.getParameter("groupConstant"));
-			String jndi = ueh.decryptParam(req.getParameter("ds"));
-			String table = ueh.decryptParam(req.getParameter("table"));
-			String ownerColumn = ueh.decryptParam(req.getParameter("ownerColumn"));
-			String docColumn = ueh.decryptParam(req.getParameter("documentColumn"));
+//			String jndi = ueh.decryptParam(req.getParameter("ds"));
+//			String table = ueh.decryptParam(req.getParameter("table"));
+//			String ownerColumn = ueh.decryptParam(req.getParameter("ownerColumn"));
+//			String docColumn = ueh.decryptParam(req.getParameter("documentColumn"));
 
 			// Check that this user is in the access group allowed to download from Box
-			String userName = sc.getName();
-//			Long accessGroupId = getAccessGroupId(cs, pds, groupConstant);
-			Long accessGroupId = cs.getIdByUuid(ACCESS_GROUP_UUID);
-			if(!gs.isUserMember(userName, accessGroupId)) {
-				// Check if the user ID is in a table for this doc ID
-				String owner = null;
-				boolean ownerMatched = false;
-				if(jndi != null) {
-					Context ctx = new InitialContext();
-				    ds = (DataSource)ctx.lookup(jndi);
-				    String sql = "select " + ownerColumn + " from " + table + " where " + docColumn + " = " + document;
-				    try (Connection con = ds.getConnection();
-				            PreparedStatement stmt = con.prepareStatement(sql);
-				            ResultSet rs = stmt.executeQuery();) {
-
-				          LOG.info(" Connected to JNDI = " + con);
-				          LOG.info(" Statement = " + stmt);
-				          LOG.info(" Resultset = " + rs);
-
-				          while (rs.next()) {
-				        	  	owner = rs.getString(ownerColumn);
-						    //Compare the owner retrieved from the DB to the logged in user
-				        	  	if (owner != null && owner.equalsIgnoreCase(userName)) {
-				        	  		ownerMatched = true;
-				        	  		break;
-				        	  	}
-				          }
-				    }
-
-				    //See if the owner matched
-				    if (!ownerMatched) {
-						throw new IllegalStateException("User does not own this Box file and is not in the group allowed to download from Box");
-				    }
-				} else {
-					throw new IllegalStateException("User is not allowed to download from Box");
-				}
-			}
+//			String userName = sc.getName();
+////			Long accessGroupId = getAccessGroupId(cs, pds, groupConstant);
+//			Long accessGroupId = cs.getIdByUuid(ACCESS_GROUP_UUID);
+//			if(!gs.isUserMember(userName, accessGroupId)) {
+//				// Check if the user ID is in a table for this doc ID
+//				String owner = null;
+//				boolean ownerMatched = false;
+//				if(jndi != null) {
+//					Context ctx = new InitialContext();
+//				    ds = (DataSource)ctx.lookup(jndi);
+//				    String sql = "select " + ownerColumn + " from " + table + " where " + docColumn + " = " + document;
+//				    try (Connection con = ds.getConnection();
+//				            PreparedStatement stmt = con.prepareStatement(sql);
+//				            ResultSet rs = stmt.executeQuery();) {
+//
+//				          LOG.info(" Connected to JNDI = " + con);
+//				          LOG.info(" Statement = " + stmt);
+//				          LOG.info(" Resultset = " + rs);
+//
+//				          while (rs.next()) {
+//				        	  	owner = rs.getString(ownerColumn);
+//						    //Compare the owner retrieved from the DB to the logged in user
+//				        	  	if (owner != null && owner.equalsIgnoreCase(userName)) {
+//				        	  		ownerMatched = true;
+//				        	  		break;
+//				        	  	}
+//				          }
+//				    }
+//
+//				    //See if the owner matched
+//				    if (!ownerMatched) {
+//						throw new IllegalStateException("User does not own this Box file and is not in the group allowed to download from Box");
+//				    }
+//				} else {
+//					throw new IllegalStateException("User is not allowed to download from Box");
+//				}
+//			}
 
 			Boolean haveToken;
 			String clientId = null;
