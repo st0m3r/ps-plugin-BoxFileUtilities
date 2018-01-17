@@ -2,18 +2,18 @@
 	<plugin-info>
 		<description>Box</description>
 		<vendor name="Appian Corporation" url="http://www.appian.com" />
-		<version>1.0.3</version>
+		<version>1.0.6</version>
 		<application-version min="7.1.0" />
 	</plugin-info>
 	<function-category name="JWT Functions" key="jwtCategoryV2" />
-    <function key="jwt" class="com.appiancorp.ps.plugins.boxFileUtilities.CreateJWT" />
+    <function key="jwt" class="com.appiancorp.ps.plugins.boxFileUtilities.jwt.CreateJWT" />
 	<smart-service name="Box File Upload" key="BoxFileUploadV9"
-		class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileUpload" />
-	<smart-service name="Box File Download" key="BoxFileDownloadToAppianV8"
-		class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownload" />
+		class="com.appiancorp.ps.plugins.boxFileUtilities.upload.BoxFileUpload" />
+	<smart-service name="Box File Download" key="BoxFileDownload"
+		class="com.appiancorp.ps.plugins.boxFileUtilities.download.BoxFileDownload" />
 	<function-category key="boxCategory" name="Box Functions" />
-    <function key="box" class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownloadToAppian" />
-    <servlet name="Box Download Servlet" key="boxServlet" class="com.appiancorp.ps.plugins.boxFileUtilities.BoxFileDownloadServlet">
+    <function key="box" class="com.appiancorp.ps.plugins.boxFileUtilities.servlet.ConstructBoxServletURL" />
+    <servlet name="Box Download Servlet" key="boxServlet" class="com.appiancorp.ps.plugins.boxFileUtilities.servlet.BoxFileDownloadServlet">
         <description>Download Box File</description>
         <url-pattern>/boxfiledownload</url-pattern>
     </servlet>
